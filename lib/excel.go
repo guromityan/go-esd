@@ -8,12 +8,19 @@ import (
 	"github.com/360EntSecGroup-Skylar/excelize"
 )
 
-const cellLineStyle = `{"border":[
-	{"type":"bottom","color":"000000","style":1},
-	{"type":"top",   "color":"000000","style":1},
-	{"type":"left",  "color":"000000","style":1},
-	{"type":"right", "color":"000000","style":1}
-	]}`
+const cellLineStyle = `{
+	"border":[
+		{"type":"bottom","color":"000000","style":1},
+		{"type":"top",   "color":"000000","style":1},
+		{"type":"left",  "color":"000000","style":1},
+		{"type":"right", "color":"000000","style":1}
+	],
+	"alignment":{
+		"horizontal": "left",
+		"vertical": "center",
+		"wrap_text": true
+		}
+	}`
 
 type TestSpec struct {
 	Data Tests
@@ -41,6 +48,17 @@ func NewTestSpec(data *Tests) (*TestSpec, error) {
 func (ts *TestSpec) Save() error {
 	ss := ts.File.GetSheetList()
 	for _, s := range ss {
+		// セルの値を再計算
+		rows, err := ts.File.GetRows(s)
+		if err != nil {
+			return err
+		}
+		for r, row := range rows {
+			for c := range row {
+				axis, _ := excelize.CoordinatesToCellName(r+1, c+1)
+				ts.File.CalcCellValue(s, axis)
+			}
+		}
 		ts.File.GetCellValue(s, "A1")
 	}
 	ts.File.UpdateLinkedValue()
@@ -89,6 +107,15 @@ func (ts *TestSpec) GetMergeCellFunc(sheet string) func(x1, y1, x2, y2 int) erro
 		}
 
 		return nil
+	}
+}
+
+func (ts *TestSpec) GetSetColWidthFunc(sheet string) func(col string, width int) error {
+	setSheetName(sheet, ts.File)
+
+	return func(col string, width int) error {
+		w := float64(width)
+		return ts.File.SetColWidth(sheet, col, col, w)
 	}
 }
 

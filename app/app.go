@@ -7,25 +7,24 @@ import (
 	"github.com/guromityan/go-esd/lib"
 )
 
-var startRow int = 3
+var startRow int = 1
 
 type rowConf struct {
 	Header string
-	Width  int
 	Column string
 }
 
 var rowConfs []rowConf = []rowConf{
-	{Header: "連番", Width: 5, Column: "A"},
-	{Header: "項版", Width: 5, Column: "B"},
-	{Header: "カテゴリ", Width: 5, Column: "C"},
-	{Header: "ケース", Width: 5, Column: "D"},
-	{Header: "確認手順", Width: 5, Column: "E"},
-	{Header: "期待値", Width: 5, Column: "F"},
-	{Header: "結果", Width: 5, Column: "G"},
-	{Header: "確認日", Width: 5, Column: "H"},
-	{Header: "確認者", Width: 5, Column: "I"},
-	{Header: "備考", Width: 5, Column: "J"},
+	{Header: "連番", Column: "A"},
+	{Header: "項版", Column: "B"},
+	{Header: "カテゴリ", Column: "C"},
+	{Header: "ケース", Column: "D"},
+	{Header: "確認手順", Column: "E"},
+	{Header: "期待値", Column: "F"},
+	{Header: "結果", Column: "G"},
+	{Header: "確認日", Column: "H"},
+	{Header: "確認者", Column: "I"},
+	{Header: "備考", Column: "J"},
 }
 
 func SetData(ts *lib.TestSpec) error {
@@ -33,6 +32,7 @@ func SetData(ts *lib.TestSpec) error {
 
 	for _, g := range genrs {
 		rowNum := startRow
+
 		// シート名、ヘッダの設定
 		setCellVal := ts.GetSetCellValFunc(g.Genre)
 		mergeCell := ts.GetMergeCellFunc(g.Genre)
@@ -53,7 +53,7 @@ func SetData(ts *lib.TestSpec) error {
 					if si == 0 {
 						steps = fmt.Sprintf("%v. %v", si+1, s)
 					} else {
-						steps = fmt.Sprintf("%v\n%v. %v", steps, si+1, s)
+						steps = fmt.Sprintf("%v\r\n%v. %v", steps, si+1, s)
 					}
 				}
 				setCellVal(5, rowNum+1, steps)
@@ -83,6 +83,6 @@ func SetData(ts *lib.TestSpec) error {
 
 func setHeaders(rowConfs []rowConf, f func(x, y int, val interface{}) error) {
 	for i, rc := range rowConfs {
-		f(i+1, 3, rc.Header)
+		f(i+1, startRow, rc.Header)
 	}
 }

@@ -1,7 +1,11 @@
 package lib
 
-import "fmt"
+import (
+	"fmt"
+	"unicode/utf8"
+)
 
+// Tests テスト仕様
 type Tests struct {
 	Name   string
 	path   string
@@ -77,15 +81,37 @@ func (g *Genre) LastCategory() *Category {
 	return &g.Categories[len(g.Categories)-1]
 }
 
+func (g *Genre) GetMaxCategory() int {
+	max := 0
+	for _, c := range g.Categories {
+		l := getStrLen(c.Category)
+		if l > max {
+			max = l
+		}
+	}
+	return max
+}
+
 func (c *Category) LastCase() *Case {
 	return &c.Cases[len(c.Cases)-1]
+}
+
+func (c *Category) GetMaxCase() int {
+	max := 0
+	for _, s := range c.Cases {
+		l := getStrLen(s.Case)
+		if l > max {
+			max = l
+		}
+	}
+	return max
 }
 
 func (c *Case) AddStep(step string, isNew bool) {
 	if isNew {
 		c.Steps = append(c.Steps, step)
 	} else {
-		c.Steps[len(c.Steps)-1] = fmt.Sprintf("%v\n  %v", c.Steps[len(c.Steps)-1], step)
+		c.Steps[len(c.Steps)-1] = fmt.Sprintf("%v\r\n  %v", c.Steps[len(c.Steps)-1], step)
 	}
 }
 
@@ -93,7 +119,7 @@ func (c *Case) AddCheck(check string, isNew bool) {
 	if isNew {
 		c.Checks = append(c.Checks, check)
 	} else {
-		c.Checks[len(c.Checks)-1] = fmt.Sprintf("%v\n%v", c.Checks[len(c.Checks)-1], check)
+		c.Checks[len(c.Checks)-1] = fmt.Sprintf("%v\r\n%v", c.Checks[len(c.Checks)-1], check)
 	}
 }
 
@@ -107,4 +133,8 @@ func (t *Tests) ChecksNum() int {
 		}
 	}
 	return num
+}
+
+func getStrLen(str string) int {
+	return utf8.RuneCountInString(str)
 }
