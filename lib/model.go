@@ -85,7 +85,7 @@ func (c *Case) AddStep(step string, isNew bool) {
 	if isNew {
 		c.Steps = append(c.Steps, step)
 	} else {
-		c.Steps[len(c.Steps)-1] = fmt.Sprintf("%v\n%v", c.Steps[len(c.Steps)-1], step)
+		c.Steps[len(c.Steps)-1] = fmt.Sprintf("%v\n  %v", c.Steps[len(c.Steps)-1], step)
 	}
 }
 
