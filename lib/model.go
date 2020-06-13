@@ -96,3 +96,15 @@ func (c *Case) AddCheck(check string, isNew bool) {
 		c.Checks[len(c.Checks)-1] = fmt.Sprintf("%v\n%v", c.Checks[len(c.Checks)-1], check)
 	}
 }
+
+func (t *Tests) ChecksNum() int {
+	num := 0
+	for _, g := range t.Genres {
+		for _, c := range g.Categories {
+			for _, s := range c.Cases {
+				num += len(s.Checks)
+			}
+		}
+	}
+	return num
+}
