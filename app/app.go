@@ -7,23 +7,25 @@ import (
 	"github.com/guromityan/go-esd/lib"
 )
 
-const (
-	aHead = "連番"
-	bHead = "項番"
-	cHead = "カテゴリ"
-	dHead = "ケース"
-	eHead = "確認手順"
-	fHead = "期待値"
-	gHead = "結果"
-	hHead = "確認日"
-	iHead = "確認者"
-	jHead = "備考"
-)
-
 var startRow int = 3
 
-var header []string = []string{
-	aHead, bHead, cHead, dHead, eHead, fHead, gHead, hHead, iHead, jHead,
+type rowConf struct {
+	Header string
+	Width  int
+	Column string
+}
+
+var rowConfs []rowConf = []rowConf{
+	{Header: "連番", Width: 5, Column: "A"},
+	{Header: "項版", Width: 5, Column: "B"},
+	{Header: "カテゴリ", Width: 5, Column: "C"},
+	{Header: "ケース", Width: 5, Column: "D"},
+	{Header: "確認手順", Width: 5, Column: "E"},
+	{Header: "期待値", Width: 5, Column: "F"},
+	{Header: "結果", Width: 5, Column: "G"},
+	{Header: "確認日", Width: 5, Column: "H"},
+	{Header: "確認者", Width: 5, Column: "I"},
+	{Header: "備考", Width: 5, Column: "J"},
 }
 
 func SetData(ts *lib.TestSpec) error {
@@ -36,7 +38,7 @@ func SetData(ts *lib.TestSpec) error {
 		mergeCell := ts.GetMergeCellFunc(g.Genre)
 		setStyle := ts.GetSetStyleFunc(g.Genre)
 
-		setHeaders(header, setCellVal)
+		setHeaders(rowConfs, setCellVal)
 		for _, c := range g.Categories {
 			// カテゴリの設定
 			setCellVal(3, rowNum+1, c.Category)
@@ -63,7 +65,8 @@ func SetData(ts *lib.TestSpec) error {
 					// 連番の設定
 					setCellVal(1, rowNum, rowNum-startRow)
 					// 項番の設定
-					setCellVal(2, rowNum, fmt.Sprintf("%v-%v-%v", c.Num+1, cs.Num+1, chi+1))
+					termNum := fmt.Sprintf("%v-%v-%v", c.Num+1, cs.Num+1, chi+1)
+					setCellVal(2, rowNum, termNum)
 					// チェックの設定
 					setCellVal(6, rowNum, ch)
 				}
@@ -75,12 +78,11 @@ func SetData(ts *lib.TestSpec) error {
 		endAxis, _ := excelize.CoordinatesToCellName(10, rowNum)
 		setStyle(startAxis, endAxis)
 	}
-
 	return nil
 }
 
-func setHeaders(header []string, f func(x, y int, val interface{}) error) {
-	for i, h := range header {
-		f(i+1, 3, h)
+func setHeaders(rowConfs []rowConf, f func(x, y int, val interface{}) error) {
+	for i, rc := range rowConfs {
+		f(i+1, 3, rc.Header)
 	}
 }
