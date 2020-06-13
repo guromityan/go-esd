@@ -114,7 +114,7 @@ func (ts *TestSpec) GetSetColWidthFunc(sheet string) func(col string, width int)
 	setSheetName(sheet, ts.File)
 
 	return func(col string, width int) error {
-		w := float64(width)
+		w := float64(width) * 2.5
 		return ts.File.SetColWidth(sheet, col, col, w)
 	}
 }

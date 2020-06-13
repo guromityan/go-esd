@@ -17,6 +17,8 @@ type Genre struct {
 	Num        int
 	Genre      string
 	Categories []Category
+	// for width
+	maxCategoryLen int
 }
 
 // Category カテゴリ
@@ -24,6 +26,10 @@ type Category struct {
 	Num      int
 	Category string
 	Cases    []Case
+	// for width
+	maxCaseLen  int
+	maxStepLen  int
+	maxCheckLen int
 }
 
 // Case テスト手順
@@ -32,6 +38,9 @@ type Case struct {
 	Case   string
 	Steps  []string
 	Checks []string
+	// for width
+	stepLen  int
+	checkLen int
 }
 
 func NewTests(name string) *Tests {
@@ -111,7 +120,12 @@ func (c *Case) AddStep(step string, isNew bool) {
 	if isNew {
 		c.Steps = append(c.Steps, step)
 	} else {
-		c.Steps[len(c.Steps)-1] = fmt.Sprintf("%v\r\n  %v", c.Steps[len(c.Steps)-1], step)
+		c.Steps[len(c.Steps)-1] = fmt.Sprintf("%v\n  %v", c.Steps[len(c.Steps)-1], step)
+	}
+	l := getStrLen(step)
+	// for width
+	if l > c.stepLen {
+		c.stepLen = l
 	}
 }
 
@@ -119,8 +133,35 @@ func (c *Case) AddCheck(check string, isNew bool) {
 	if isNew {
 		c.Checks = append(c.Checks, check)
 	} else {
-		c.Checks[len(c.Checks)-1] = fmt.Sprintf("%v\r\n%v", c.Checks[len(c.Checks)-1], check)
+		c.Checks[len(c.Checks)-1] = fmt.Sprintf("%v\n%v", c.Checks[len(c.Checks)-1], check)
 	}
+	// for width
+	l := getStrLen(check)
+	if l > c.checkLen {
+		c.checkLen = l
+	}
+}
+
+func (c *Case) GetMaxStep() int {
+	max := 0
+	for _, s := range c.Steps {
+		l := getStrLen(s)
+		if l > max {
+			max = l
+		}
+	}
+	return max
+}
+
+func (c *Case) GetMaxCheck() int {
+	max := 0
+	for _, s := range c.Checks {
+		l := getStrLen(s)
+		if l > max {
+			max = l
+		}
+	}
+	return max
 }
 
 func (t *Tests) ChecksNum() int {

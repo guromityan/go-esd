@@ -37,14 +37,26 @@ func SetData(ts *lib.TestSpec) error {
 		setCellVal := ts.GetSetCellValFunc(g.Genre)
 		mergeCell := ts.GetMergeCellFunc(g.Genre)
 		setStyle := ts.GetSetStyleFunc(g.Genre)
+		setColWidth := ts.GetSetColWidthFunc(g.Genre)
 
 		setHeaders(rowConfs, setCellVal)
-		for _, c := range g.Categories {
+		// セル幅の設定
+		setColWidth("C", g.GetMaxCategory())
+		for ci, c := range g.Categories {
+			// セル幅の設定
+			if ci == 0 {
+				setColWidth("D", c.GetMaxCase())
+			}
 			// カテゴリの設定
 			setCellVal(3, rowNum+1, c.Category)
 			categoryRowNum := rowNum + 1
 
-			for _, cs := range c.Cases {
+			for csi, cs := range c.Cases {
+				// セル幅の設定
+				if csi == 0 {
+					setColWidth("E", cs.GetMaxStep())
+					setColWidth("F", cs.GetMaxCheck())
+				}
 				// ケースの設定
 				setCellVal(4, rowNum+1, cs.Case)
 				// ステップの設定
@@ -53,7 +65,7 @@ func SetData(ts *lib.TestSpec) error {
 					if si == 0 {
 						steps = fmt.Sprintf("%v. %v", si+1, s)
 					} else {
-						steps = fmt.Sprintf("%v\r\n%v. %v", steps, si+1, s)
+						steps = fmt.Sprintf("%v\n%v. %v", steps, si+1, s)
 					}
 				}
 				setCellVal(5, rowNum+1, steps)
