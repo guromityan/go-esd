@@ -16,7 +16,7 @@ type rowConf struct {
 
 var rowConfs []rowConf = []rowConf{
 	{Header: "連番", Column: "A"},
-	{Header: "項版", Column: "B"},
+	{Header: "項番", Column: "B"},
 	{Header: "カテゴリ", Column: "C"},
 	{Header: "ケース", Column: "D"},
 	{Header: "確認手順", Column: "E"},
@@ -38,6 +38,7 @@ func SetData(ts *lib.TestSpec) error {
 		mergeCell := ts.GetMergeCellFunc(g.Genre)
 		setStyle := ts.GetSetStyleFunc(g.Genre)
 		setColWidth := ts.GetSetColWidthFunc(g.Genre)
+		setRowHeight := ts.GetSetRowHeightFunc(g.Genre)
 
 		setHeaders(rowConfs, setCellVal)
 		// セル幅の設定
@@ -69,8 +70,13 @@ func SetData(ts *lib.TestSpec) error {
 					}
 				}
 				setCellVal(5, rowNum+1, steps)
-				mergeCell(4, rowNum+1, 4, rowNum+len(cs.Checks))
-				mergeCell(5, rowNum+1, 5, rowNum+len(cs.Checks))
+				srow := rowNum + 1
+				erow := rowNum + len(cs.Checks)
+				// 行の高さ設定
+				setRowHeight(srow, erow, len(cs.Steps))
+				// セルの結合
+				mergeCell(4, srow, 4, erow)
+				mergeCell(5, srow, 5, erow)
 
 				for chi, ch := range cs.Checks {
 					rowNum++

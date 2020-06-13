@@ -8,6 +8,8 @@ import (
 	"github.com/360EntSecGroup-Skylar/excelize"
 )
 
+const rowHeightBase = 30
+
 const cellLineStyle = `{
 	"border":[
 		{"type":"bottom","color":"000000","style":1},
@@ -28,7 +30,7 @@ type TestSpec struct {
 }
 
 func NewTestSpec(data *Tests) (*TestSpec, error) {
-	filename := fmt.Sprintf("esd-%v.xlsx", getNow())
+	filename := fmt.Sprintf("esd-%v.xlsx", data.Name)
 	if data.path == "" {
 		data.path, _ = os.Getwd()
 	}
@@ -110,6 +112,7 @@ func (ts *TestSpec) GetMergeCellFunc(sheet string) func(x1, y1, x2, y2 int) erro
 	}
 }
 
+// GetSetColWidthFunc カラムの幅を設定する関数を提供
 func (ts *TestSpec) GetSetColWidthFunc(sheet string) func(col string, width int) error {
 	setSheetName(sheet, ts.File)
 
@@ -119,6 +122,21 @@ func (ts *TestSpec) GetSetColWidthFunc(sheet string) func(col string, width int)
 	}
 }
 
+// GetSetRowHeightFunc 行の高さを設定する関数を提供
+func (ts *TestSpec) GetSetRowHeightFunc(sheet string) func(srow, erow, steps int) error {
+	setSheetName(sheet, ts.File)
+
+	return func(srow, erow, steps int) error {
+		diff := erow - srow + 1
+		h := float64(rowHeightBase * steps / diff)
+		for row := srow; row <= erow; row++ {
+			ts.File.SetRowHeight(sheet, row, h)
+		}
+		return nil
+	}
+}
+
+// GetSetStyleFunc セルのスタイルを設定する関数を提供
 func (ts *TestSpec) GetSetStyleFunc(sheet string) func(axis1, axis2 string) error {
 	setSheetName(sheet, ts.File)
 
@@ -160,10 +178,4 @@ func newExcelFile(filename string) (*excelize.File, error) {
 		return nil, fmt.Errorf("Cloud not Save file %v: %v", filename, err)
 	}
 	return f, nil
-}
-
-func getNow() string {
-	// t := time.Now()
-	// return t.Format("20060102150405")
-	return "testfile"
 }
