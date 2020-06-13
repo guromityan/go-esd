@@ -3,6 +3,7 @@ package app
 import (
 	"fmt"
 
+	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/guromityan/go-esd/lib"
 )
 
@@ -19,13 +20,13 @@ const (
 	jHead = "備考"
 )
 
-const startRow = 3
+var startRow int = 3
 
 var header []string = []string{
 	aHead, bHead, cHead, dHead, eHead, fHead, gHead, hHead, iHead, jHead,
 }
 
-func SetData(ts *lib.TestSpec) {
+func SetData(ts *lib.TestSpec) error {
 	genrs := ts.Data.Genres
 
 	for _, g := range genrs {
@@ -33,6 +34,7 @@ func SetData(ts *lib.TestSpec) {
 		// シート名、ヘッダの設定
 		setCellVal := ts.GetSetCellValFunc(g.Genre)
 		mergeCell := ts.GetMergeCellFunc(g.Genre)
+		setStyle := ts.GetSetStyleFunc(g.Genre)
 
 		setHeaders(header, setCellVal)
 		for _, c := range g.Categories {
@@ -68,7 +70,13 @@ func SetData(ts *lib.TestSpec) {
 			}
 			mergeCell(3, categoryRowNum, 3, rowNum)
 		}
+
+		startAxis, _ := excelize.CoordinatesToCellName(1, startRow)
+		endAxis, _ := excelize.CoordinatesToCellName(10, rowNum)
+		setStyle(startAxis, endAxis)
 	}
+
+	return nil
 }
 
 func setHeaders(header []string, f func(x, y int, val interface{}) error) {

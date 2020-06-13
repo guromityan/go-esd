@@ -8,6 +8,13 @@ import (
 	"github.com/360EntSecGroup-Skylar/excelize"
 )
 
+const cellLineStyle = `{"border":[
+	{"type":"bottom","color":"000000","style":1},
+	{"type":"top",   "color":"000000","style":1},
+	{"type":"left",  "color":"000000","style":1},
+	{"type":"right", "color":"000000","style":1}
+	]}`
+
 type TestSpec struct {
 	Data Tests
 	File *excelize.File
@@ -81,6 +88,22 @@ func (ts *TestSpec) GetMergeCellFunc(sheet string) func(x1, y1, x2, y2 int) erro
 			return err
 		}
 
+		return nil
+	}
+}
+
+func (ts *TestSpec) GetSetStyleFunc(sheet string) func(axis1, axis2 string) error {
+	setSheetName(sheet, ts.File)
+
+	return func(axis1, axis2 string) error {
+		style, err := ts.File.NewStyle(cellLineStyle)
+		if err != nil {
+			return err
+		}
+		err = ts.File.SetCellStyle(sheet, axis1, axis2, style)
+		if err != nil {
+			return err
+		}
 		return nil
 	}
 }
