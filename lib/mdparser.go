@@ -8,10 +8,11 @@ import (
 	"strings"
 )
 
-func MDParser(filename string) error {
+// MDParser Markdown を解析し構造体に格納
+func MDParser(filename string) (*Tests, error) {
 	fp, err := os.Open(filename)
 	if err != nil {
-		return fmt.Errorf("Colud not open %v: %v", filename, err)
+		return nil, fmt.Errorf("Colud not open %v: %v", filename, err)
 	}
 	defer fp.Close()
 
@@ -25,6 +26,11 @@ func MDParser(filename string) error {
 
 		// 空行
 		if line == "" {
+			continue
+		}
+
+		// コードブロック
+		if strings.HasPrefix(line, "```") {
 			continue
 		}
 
@@ -52,7 +58,7 @@ func MDParser(filename string) error {
 
 		// テストカテゴリ
 		if strings.HasPrefix(line, "### ") {
-
+			mode = "category"
 			name := line[4:]
 			NewCategory(name, tests.LastGenre())
 			continue
@@ -69,8 +75,7 @@ func MDParser(filename string) error {
 		// テストチェック
 		if strings.HasPrefix(line, "- [ ] ") {
 			mode = "check"
-			checks := tests.LastGenre().LastCategory().LastCase().Checks
-			checks = append(checks, line)
+			tests.LastGenre().LastCategory().LastCase().AddCheck(line[6:], true)
 			continue
 		}
 
@@ -80,28 +85,30 @@ func MDParser(filename string) error {
 			_, err := strconv.Atoi(line[:i])
 			if err == nil {
 				mode = "step"
-				lastCase := tests.LastGenre().LastCategory().LastCase()
-				lastCase.Steps = append(lastCase.Steps, line[i+2:])
+				tests.LastGenre().LastCategory().LastCase().AddStep(line[i+2:], true)
 			} else {
 				if mode == "step" {
-					lastCase := tests.LastGenre().LastCategory().LastCase()
-					if len(lastCase.Steps) != 0 {
-						lastCase.Steps[len(lastCase.Steps)-1] = fmt.Sprintf("%v\n%v", lastCase.Steps[len(lastCase.Steps)-1], line)
-					}
+					tests.LastGenre().LastCategory().LastCase().AddStep(line, false)
+				} else if mode == "check" {
+					tests.LastGenre().LastCategory().LastCase().AddCheck(line, false)
 				}
 			}
 			continue
 		}
 
 		if mode == "step" {
-			lastCase := tests.LastGenre().LastCategory().LastCase()
-			lastCase.Steps[len(lastCase.Steps)-1] = fmt.Sprintf("%v\n%v", lastCase.Steps[len(lastCase.Steps)-1], line)
+			tests.LastGenre().LastCategory().LastCase().AddStep(line, false)
+			continue
+		}
+
+		if mode == "check" {
+			tests.LastGenre().LastCategory().LastCase().AddCheck(line, false)
 		}
 	}
 
 	if err := scanner.Err(); err != nil {
-		return fmt.Errorf("File scan error: %v", err)
+		return nil, fmt.Errorf("File scan error: %v", err)
 	}
 
-	return nil
+	return tests, nil
 }

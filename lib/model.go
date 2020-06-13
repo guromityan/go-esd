@@ -1,5 +1,7 @@
 package lib
 
+import "fmt"
+
 type Tests struct {
 	Name   string
 	path   string
@@ -77,4 +79,20 @@ func (g *Genre) LastCategory() *Category {
 
 func (c *Category) LastCase() *Case {
 	return &c.Cases[len(c.Cases)-1]
+}
+
+func (c *Case) AddStep(step string, isNew bool) {
+	if isNew {
+		c.Steps = append(c.Steps, step)
+	} else {
+		c.Steps[len(c.Steps)-1] = fmt.Sprintf("%v\n%v", c.Steps[len(c.Steps)-1], step)
+	}
+}
+
+func (c *Case) AddCheck(check string, isNew bool) {
+	if isNew {
+		c.Checks = append(c.Checks, check)
+	} else {
+		c.Checks[len(c.Checks)-1] = fmt.Sprintf("%v\n%v", c.Checks[len(c.Checks)-1], check)
+	}
 }
