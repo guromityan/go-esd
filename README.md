@@ -65,7 +65,7 @@ esd-XXテスト仕様書.xlsx
 
 生成された `esd-XXテスト仕様書.xlsx` を開くと以下のような構造になっている
 
-![output](./sampledata/output.png)
+![output](./output.png)
 
 
 
