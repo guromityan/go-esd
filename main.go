@@ -10,7 +10,7 @@ import (
 
 var (
 	// コマンドオプション
-	mdFile  = kingpin.Flag("mdfile", "Markdown file to convert.").Short('f').Required().ExistingFile()
+	mdFile  = kingpin.Flag("file", "Markdown file to convert.").Short('f').Required().ExistingFile()
 	destDir = kingpin.Flag("dest", "Existing directory to output the file.").Short('d').ExistingDir()
 )
 
