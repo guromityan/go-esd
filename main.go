@@ -8,6 +8,8 @@ import (
 	"gopkg.in/alecthomas/kingpin.v2"
 )
 
+const version = "esd-1.0.0"
+
 var (
 	// コマンドオプション
 	mdFile  = kingpin.Flag("file", "Markdown file to convert.").Short('f').Required().ExistingFile()
@@ -15,6 +17,8 @@ var (
 )
 
 func main() {
+	kingpin.Version(version)
+
 	// 引数をパース
 	kingpin.Parse()
 
