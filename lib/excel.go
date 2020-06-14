@@ -2,7 +2,6 @@ package lib
 
 import (
 	"fmt"
-	"os"
 	"path/filepath"
 
 	"github.com/360EntSecGroup-Skylar/excelize"
@@ -31,9 +30,6 @@ type TestSpec struct {
 
 func NewTestSpec(data *Tests) (*TestSpec, error) {
 	filename := fmt.Sprintf("esd-%v.xlsx", data.Name)
-	if data.path == "" {
-		data.path, _ = os.Getwd()
-	}
 	filepath := filepath.Clean(fmt.Sprintf("%v/%v", data.path, filename))
 	fmt.Println(filepath)
 	file, err := newExcelFile(filepath)
@@ -64,6 +60,7 @@ func (ts *TestSpec) Save() error {
 		ts.File.GetCellValue(s, "A1")
 	}
 	ts.File.UpdateLinkedValue()
+	ts.File.SetActiveSheet(0)
 	err := ts.File.Save()
 	if err != nil {
 		return fmt.Errorf("Cloud not update file: %v)", err)

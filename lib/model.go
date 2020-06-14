@@ -2,6 +2,7 @@ package lib
 
 import (
 	"fmt"
+	"os"
 	"unicode/utf8"
 )
 
@@ -84,6 +85,19 @@ func NewCase(name string, ca *Category) *Case {
 
 func (t *Tests) LastGenre() *Genre {
 	return &t.Genres[len(t.Genres)-1]
+}
+
+func (t *Tests) SetPath(path string) error {
+	if path != "" {
+		t.path = path
+	} else {
+		wd, err := os.Getwd()
+		if err != nil {
+			return err
+		}
+		t.path = wd
+	}
+	return nil
 }
 
 func (g *Genre) LastCategory() *Category {
