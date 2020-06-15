@@ -3,6 +3,7 @@ package lib
 import (
 	"fmt"
 	"os"
+	"strings"
 	"unicode/utf8"
 )
 
@@ -143,6 +144,27 @@ func (c *Case) AddStep(step string, isNew bool) {
 	}
 }
 
+func (c *Case) GetStepCheckBiggerNum() int {
+	stepNum := 0
+	for _, s := range c.Steps {
+		for _ = range strings.Split(s, "\n") {
+			stepNum++
+		}
+	}
+
+	checkNum := 0
+	for _, c := range c.Checks {
+		for _ = range strings.Split(c, "\n") {
+			checkNum++
+		}
+	}
+
+	if stepNum > checkNum {
+		return stepNum
+	}
+	return checkNum
+}
+
 func (c *Case) AddCheck(check string, isNew bool) {
 	if isNew {
 		c.Checks = append(c.Checks, check)
@@ -159,9 +181,11 @@ func (c *Case) AddCheck(check string, isNew bool) {
 func (c *Case) GetMaxStep() int {
 	max := 0
 	for _, s := range c.Steps {
-		l := getStrLen(s)
-		if l > max {
-			max = l
+		for _, ss := range strings.Split(s, "\n") {
+			l := getStrLen(ss)
+			if l > max {
+				max = l
+			}
 		}
 	}
 	return max

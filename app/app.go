@@ -73,7 +73,7 @@ func SetData(ts *lib.TestSpec) error {
 				srow := rowNum + 1
 				erow := rowNum + len(cs.Checks)
 				// 行の高さ設定
-				setRowHeight(srow, erow, len(cs.Steps))
+				setRowHeight(srow, erow, cs.GetStepCheckBiggerNum())
 				// セルの結合
 				mergeCell(4, srow, 4, erow)
 				mergeCell(5, srow, 5, erow)

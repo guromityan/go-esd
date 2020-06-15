@@ -23,7 +23,7 @@ func main() {
 	kingpin.Parse()
 
 	// Markdown をパース
-	data, err := lib.MDParser(*mdFile)
+	data, err := lib.MDParse(*mdFile)
 	if err != nil {
 		log.Fatalln(err)
 	}

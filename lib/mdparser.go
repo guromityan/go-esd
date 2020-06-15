@@ -8,8 +8,8 @@ import (
 	"strings"
 )
 
-// MDParser Markdown を解析し構造体に格納
-func MDParser(filename string) (*Tests, error) {
+// MDParse Markdown を解析し構造体に格納
+func MDParse(filename string) (*Tests, error) {
 	fp, err := os.Open(filename)
 	if err != nil {
 		return nil, fmt.Errorf("Colud not open %v: %v", filename, err)
