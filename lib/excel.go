@@ -7,7 +7,7 @@ import (
 	"github.com/360EntSecGroup-Skylar/excelize"
 )
 
-const rowHeightBase = 30
+const rowHeightBase = 25
 
 const cellLineStyle = `{
 	"border":[
@@ -125,7 +125,7 @@ func (ts *TestSpec) GetSetRowHeightFunc(sheet string) func(srow, erow, steps int
 
 	return func(srow, erow, steps int) error {
 		diff := erow - srow + 1
-		h := float64(rowHeightBase * steps / diff)
+		h := float64((rowHeightBase * steps / diff) - steps)
 		// 最低限の高さを確保
 		if h < rowHeightBase {
 			h = rowHeightBase

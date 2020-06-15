@@ -144,7 +144,7 @@ func (c *Case) AddStep(step string, isNew bool) {
 	}
 }
 
-func (c *Case) GetStepCheckBiggerNum() int {
+func (c *Case) GetStepCheckHeight() []int {
 	stepNum := 0
 	for _, s := range c.Steps {
 		for _ = range strings.Split(s, "\n") {
@@ -153,16 +153,27 @@ func (c *Case) GetStepCheckBiggerNum() int {
 	}
 
 	checkNum := 0
+	checks := make([]int, 0)
 	for _, c := range c.Checks {
-		for _ = range strings.Split(c, "\n") {
+		cs := strings.Split(c, "\n")
+		checks = append(checks, len(cs))
+		for range cs {
 			checkNum++
 		}
 	}
 
+	max := 0
 	if stepNum > checkNum {
-		return stepNum
+		max = stepNum
+	} else {
+		max = checkNum
 	}
-	return checkNum
+
+	heights := make([]int, 0)
+	for _, c := range checks {
+		heights = append(heights, max*c/checkNum)
+	}
+	return heights
 }
 
 func (c *Case) AddCheck(check string, isNew bool) {
