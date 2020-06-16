@@ -86,7 +86,7 @@ func NewCase(name string, ca *Category) *Case {
 
 func (t *Tests) LastGenre() (*Genre, error) {
 	if len(t.Genres) == 0 {
-		return nil, fmt.Errorf("None Genre.")
+		return nil, fmt.Errorf("None Genre: %v\n", t.Name)
 	}
 	return &t.Genres[len(t.Genres)-1], nil
 }

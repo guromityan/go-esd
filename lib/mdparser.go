@@ -91,7 +91,6 @@ func MDParse(filename string) (*Tests, error) {
 			continue
 		}
 
-		// テストステップ
 		i := strings.Index(line, ".")
 		if i > 0 {
 			_, err := strconv.Atoi(line[:i])
@@ -109,28 +108,29 @@ func MDParse(filename string) (*Tests, error) {
 				}
 				if mode == "step" {
 					lcase.AddStep(line, false)
-				} else if mode == "check" {
+					continue
+				}
+				if mode == "check" {
 					lcase.AddCheck(line, false)
 				}
 			}
 			continue
 		}
 
-		if mode == "step" {
+		if mode == "step" || mode == "check" {
 			lcase, err := tests.LastCase()
 			if err != nil {
 				return nil, err
 			}
-			lcase.AddStep(line, false)
-			continue
-		}
 
-		if mode == "check" {
-			lcase, err := tests.LastCase()
-			if err != nil {
-				return nil, err
+			if mode == "step" {
+				lcase.AddStep(line, false)
+				continue
 			}
-			lcase.AddCheck(line, false)
+
+			if mode == "check" {
+				lcase.AddCheck(line, false)
+			}
 		}
 	}
 
