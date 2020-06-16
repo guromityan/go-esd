@@ -45,6 +45,7 @@ type Case struct {
 	checkLen int
 }
 
+// NewTests テスト仕様生成
 func NewTests(name string) *Tests {
 	return &Tests{
 		Name:   name,
@@ -53,6 +54,7 @@ func NewTests(name string) *Tests {
 	}
 }
 
+// NewGenre ジャンル生成
 func NewGenre(name string, te *Tests) *Genre {
 	g := Genre{
 		Num:        len(te.Genres),
@@ -63,6 +65,7 @@ func NewGenre(name string, te *Tests) *Genre {
 	return &g
 }
 
+// NewCategory カテゴリ生成
 func NewCategory(name string, ge *Genre) *Category {
 	c := Category{
 		Num:      len(ge.Categories),
@@ -73,6 +76,7 @@ func NewCategory(name string, ge *Genre) *Category {
 	return &c
 }
 
+// NewCase ケース生成
 func NewCase(name string, ca *Category) *Case {
 	c := Case{
 		Num:    len(ca.Cases),
@@ -84,36 +88,40 @@ func NewCase(name string, ca *Category) *Case {
 	return &c
 }
 
+// LastGenre 最後のジャンル取得
 func (t *Tests) LastGenre() (*Genre, error) {
 	if len(t.Genres) == 0 {
-		return nil, fmt.Errorf("None Genre: %v\n", t.Name)
+		return nil, fmt.Errorf("None Genre: %v", t.Name)
 	}
 	return &t.Genres[len(t.Genres)-1], nil
 }
 
+// LastCategory 最後のカテゴリ取得
 func (t *Tests) LastCategory() (*Category, error) {
 	genre, err := t.LastGenre()
 	if err != nil {
 		return nil, err
 	}
 	if len(genre.Categories) == 0 {
-		return nil, fmt.Errorf("No Categories: %v\n", genre.Genre)
+		return nil, fmt.Errorf("No Categories: %v", genre.Genre)
 	}
 	return &genre.Categories[len(genre.Categories)-1], nil
 }
 
+// LastCase 最後のケース取得
 func (t *Tests) LastCase() (*Case, error) {
 	category, err := t.LastCategory()
 	if err != nil {
 		return nil, err
 	}
 	if len(category.Cases) == 0 {
-		return nil, fmt.Errorf("No Cases: %v\n", category.Category)
+		return nil, fmt.Errorf("No Cases: %v", category.Category)
 	}
 	return &category.Cases[len(category.Cases)-1], nil
 
 }
 
+// SetPath 生成した Excel を保存するディレクトリを設定
 func (t *Tests) SetPath(path string) error {
 	if path != "" {
 		t.path = path
@@ -127,6 +135,7 @@ func (t *Tests) SetPath(path string) error {
 	return nil
 }
 
+// GetMaxCategory 最長カテゴリを取得
 func (g *Genre) GetMaxCategory() int {
 	max := 0
 	for _, c := range g.Categories {
@@ -138,6 +147,7 @@ func (g *Genre) GetMaxCategory() int {
 	return max
 }
 
+// GetMaxCase 最長ケースを取得
 func (c *Category) GetMaxCase() int {
 	max := 0
 	for _, s := range c.Cases {
@@ -149,6 +159,7 @@ func (c *Category) GetMaxCase() int {
 	return max
 }
 
+// AddStep ステップを追加
 func (c *Case) AddStep(step string, isNew bool) {
 	if isNew {
 		c.Steps = append(c.Steps, step)
@@ -162,10 +173,11 @@ func (c *Case) AddStep(step string, isNew bool) {
 	}
 }
 
+// GetStepCheckHeight ステップとチェックから最適な高さを取得
 func (c *Case) GetStepCheckHeight() []int {
 	stepNum := 0
 	for _, s := range c.Steps {
-		for _ = range strings.Split(s, "\n") {
+		for range strings.Split(s, "\n") {
 			stepNum++
 		}
 	}
@@ -194,6 +206,7 @@ func (c *Case) GetStepCheckHeight() []int {
 	return heights
 }
 
+// AddCheck チェックを追加
 func (c *Case) AddCheck(check string, isNew bool) {
 	if isNew {
 		c.Checks = append(c.Checks, check)
@@ -207,6 +220,7 @@ func (c *Case) AddCheck(check string, isNew bool) {
 	}
 }
 
+// GetMaxStep 最長のステップを取得
 func (c *Case) GetMaxStep() int {
 	max := 0
 	for _, s := range c.Steps {
@@ -220,6 +234,7 @@ func (c *Case) GetMaxStep() int {
 	return max
 }
 
+// GetMaxCheck 最長のチェックを取得
 func (c *Case) GetMaxCheck() int {
 	max := 0
 	for _, s := range c.Checks {
@@ -229,18 +244,6 @@ func (c *Case) GetMaxCheck() int {
 		}
 	}
 	return max
-}
-
-func (t *Tests) ChecksNum() int {
-	num := 0
-	for _, g := range t.Genres {
-		for _, c := range g.Categories {
-			for _, s := range c.Cases {
-				num += len(s.Checks)
-			}
-		}
-	}
-	return num
 }
 
 func getStrLen(str string) int {

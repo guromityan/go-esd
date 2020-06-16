@@ -23,11 +23,13 @@ const cellLineStyle = `{
 		}
 	}`
 
+// TestSpec テストデータ
 type TestSpec struct {
 	Data Tests
 	File *excelize.File
 }
 
+// NewTestSpec テストデータ生成
 func NewTestSpec(data *Tests) (*TestSpec, error) {
 	filename := fmt.Sprintf("esd-%v.xlsx", data.Name)
 	filepath := filepath.Clean(fmt.Sprintf("%v/%v", data.path, filename))
