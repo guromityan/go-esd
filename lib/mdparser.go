@@ -60,7 +60,11 @@ func MDParse(filename string) (*Tests, error) {
 		if strings.HasPrefix(line, "### ") {
 			mode = "category"
 			name := line[4:]
-			NewCategory(name, tests.LastGenre())
+			genre, err := tests.LastGenre()
+			if err != nil {
+				return nil, err
+			}
+			NewCategory(name, genre)
 			continue
 		}
 
@@ -68,14 +72,22 @@ func MDParse(filename string) (*Tests, error) {
 		if strings.HasPrefix(line, "#### ") {
 			mode = "case"
 			name := line[5:]
-			NewCase(name, tests.LastGenre().LastCategory())
+			catagory, err := tests.LastCategory()
+			if err != nil {
+				return nil, err
+			}
+			NewCase(name, catagory)
 			continue
 		}
 
 		// テストチェック
 		if strings.HasPrefix(line, "- [ ] ") {
 			mode = "check"
-			tests.LastGenre().LastCategory().LastCase().AddCheck(line[6:], true)
+			lcase, err := tests.LastCase()
+			if err != nil {
+				return nil, err
+			}
+			lcase.AddCheck(line[6:], true)
 			continue
 		}
 
@@ -85,24 +97,40 @@ func MDParse(filename string) (*Tests, error) {
 			_, err := strconv.Atoi(line[:i])
 			if err == nil {
 				mode = "step"
-				tests.LastGenre().LastCategory().LastCase().AddStep(line[i+2:], true)
+				lcase, err := tests.LastCase()
+				if err != nil {
+					return nil, err
+				}
+				lcase.AddStep(line[i+2:], true)
 			} else {
+				lcase, err := tests.LastCase()
+				if err != nil {
+					return nil, err
+				}
 				if mode == "step" {
-					tests.LastGenre().LastCategory().LastCase().AddStep(line, false)
+					lcase.AddStep(line, false)
 				} else if mode == "check" {
-					tests.LastGenre().LastCategory().LastCase().AddCheck(line, false)
+					lcase.AddCheck(line, false)
 				}
 			}
 			continue
 		}
 
 		if mode == "step" {
-			tests.LastGenre().LastCategory().LastCase().AddStep(line, false)
+			lcase, err := tests.LastCase()
+			if err != nil {
+				return nil, err
+			}
+			lcase.AddStep(line, false)
 			continue
 		}
 
 		if mode == "check" {
-			tests.LastGenre().LastCategory().LastCase().AddCheck(line, false)
+			lcase, err := tests.LastCase()
+			if err != nil {
+				return nil, err
+			}
+			lcase.AddCheck(line, false)
 		}
 	}
 

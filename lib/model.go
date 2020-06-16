@@ -84,8 +84,34 @@ func NewCase(name string, ca *Category) *Case {
 	return &c
 }
 
-func (t *Tests) LastGenre() *Genre {
-	return &t.Genres[len(t.Genres)-1]
+func (t *Tests) LastGenre() (*Genre, error) {
+	if len(t.Genres) == 0 {
+		return nil, fmt.Errorf("None Genre.")
+	}
+	return &t.Genres[len(t.Genres)-1], nil
+}
+
+func (t *Tests) LastCategory() (*Category, error) {
+	genre, err := t.LastGenre()
+	if err != nil {
+		return nil, err
+	}
+	if len(genre.Categories) == 0 {
+		return nil, fmt.Errorf("No Categories: %v\n", genre.Genre)
+	}
+	return &genre.Categories[len(genre.Categories)-1], nil
+}
+
+func (t *Tests) LastCase() (*Case, error) {
+	category, err := t.LastCategory()
+	if err != nil {
+		return nil, err
+	}
+	if len(category.Cases) == 0 {
+		return nil, fmt.Errorf("No Cases: %v\n", category.Category)
+	}
+	return &category.Cases[len(category.Cases)-1], nil
+
 }
 
 func (t *Tests) SetPath(path string) error {
@@ -101,10 +127,6 @@ func (t *Tests) SetPath(path string) error {
 	return nil
 }
 
-func (g *Genre) LastCategory() *Category {
-	return &g.Categories[len(g.Categories)-1]
-}
-
 func (g *Genre) GetMaxCategory() int {
 	max := 0
 	for _, c := range g.Categories {
@@ -114,10 +136,6 @@ func (g *Genre) GetMaxCategory() int {
 		}
 	}
 	return max
-}
-
-func (c *Category) LastCase() *Case {
-	return &c.Cases[len(c.Cases)-1]
 }
 
 func (c *Category) GetMaxCase() int {
