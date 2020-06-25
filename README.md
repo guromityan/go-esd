@@ -59,7 +59,7 @@ Markdown で記述したテスト仕様書を Excel にそれっぽく変換す�
 これを `test.md` とした場合、以下のように実行
 
 ```bash
-$ ./esd --mdfile test.md  --dest .
+$ ./esd --file test.md  --dest .
 esd-XXテスト仕様書.xlsx
 ```
 
